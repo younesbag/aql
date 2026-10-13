@@ -4,6 +4,7 @@ import { embed, searchWeb } from "@/lib/ai/gemini";
 import { claudeJson, type SystemBlock } from "@/lib/ai/anthropic";
 import { retrieveContext, queryPerformance } from "@/lib/agents/access";
 import { parseJson } from "@/lib/agents/util";
+import { DIALECT, DIALECT_MEASURED, formatRange, rangeMid } from "@/lib/config/profile";
 import {
   type IdeaCriteria,
   type DraftOptions,
@@ -248,17 +249,25 @@ export function buildDraftDirectives(o: DraftOptions): string {
       (o.length === "auto" ? autoLen : (LENGTH_AR[o.length] ?? o.length)) +
       " — عُدَّ الكلمات قبل الإخراج والتزم المدى.",
   );
-  // نطاق اللهجة يتبع الغرض أيضاً — قيد حاسم يُذكر مع التوجيهات لا في النظام وحده
-  // مرساة محسوبة لا نطاق مجرّد: قياس حيّ أظهر أن ذكر النطاق وحده يُخرج ٤٫٤
-  // (تحت المدى) رغم أن الأمثلة المحقونة ٥٫٠ و٦٫٦ — فيُعطى العدد المطلوب صراحةً.
-  if (isSalesPurpose(o.purpose)) {
-    const target = o.length === "auto" ? 225 : 250;
-    lines.push(
-      `- كثافة اللهجة المستهدفة: **٥–٦٫٥ لكل ١٠٠ كلمة** — أي نحو **${Math.round((target * 5.7) / 100)} لمسة محكية** في نصّ من ${target} كلمة. ` +
-        "عُدّها قبل الإخراج. هذا صوته البيعيّ الحاليّ (قياس رسائله المرسَلة ٥٫٧)، والفصحى المصقولة صوته القديم الذي هجره (١٫٠).",
-    );
+  // اللهجة من data/profile.json: بلا معجم/نطاق → سطر اسم اللهجة وحده (لا أرقام للنموذج).
+  // وإلا فنطاق الكثافة يتبع الغرض أيضاً — قيد حاسم يُذكر مع التوجيهات لا في النظام وحده.
+  // مرساة محسوبة لا نطاق مجرّد: قياس حيّ أظهر أن ذكر النطاق وحده قد يُخرج كثافة تحت المدى
+  // رغم أن الأمثلة المحقونة ضمنه — فيُعطى العدد المطلوب صراحةً.
+  if (DIALECT_MEASURED && DIALECT.density) {
+    if (isSalesPurpose(o.purpose)) {
+      const target = o.length === "auto" ? 225 : 250;
+      const range = DIALECT.density.sales;
+      lines.push(
+        `- اللهجة: «${DIALECT.name}» — كثافة مستهدفة **${formatRange(range)} لكل ١٠٠ كلمة** — أي نحو **${Math.round((target * rangeMid(range)) / 100)} لمسة لهجية** في نصّ من ${target} كلمة. ` +
+          "عُدّها قبل الإخراج.",
+      );
+    } else {
+      lines.push(
+        `- اللهجة: «${DIALECT.name}» — كثافة مستهدفة ${formatRange(DIALECT.density.default)} لكل ١٠٠ كلمة. عُدّها قبل الإخراج.`,
+      );
+    }
   } else {
-    lines.push("- كثافة اللهجة المستهدفة: ٣–٥ لكل ١٠٠ كلمة (وسيط نشراته ٣٫١).");
+    lines.push(`- اللهجة: «${DIALECT.name}» (بلا عدّ رقمي).`);
   }
   if (o.style !== "auto") lines.push("- الأسلوب: " + (STYLE_AR[o.style] ?? o.style));
   if (o.angle !== "auto") {

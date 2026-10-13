@@ -1,14 +1,10 @@
 import { createClient } from "@/lib/supabase/server";
 import { getCalibration, CALIBRATION_MIN_POSTS } from "@/lib/content/calibration";
 import { getPatternAggregates } from "@/lib/content/patterns";
+import { PILLARS } from "@/lib/config/profile";
 
-// تعريب المحاور (القاعدة ٥) — مطابقة لقيم analyze.ts.
-const PILLAR_AR: Record<string, string> = {
-  prompt_engineering: "هندسة الأوامر",
-  ai_strategy: "استراتيجية الذكاء الاصطناعي",
-  ai_tools: "أدوات الذكاء الاصطناعي",
-  ai_learning: "التعلّم بالذكاء الاصطناعي",
-};
+// تعريب المحاور (القاعدة ٥) — من data/profile.json، مطابقة لقيم analyze.ts.
+const PILLAR_AR: Record<string, string> = Object.fromEntries(PILLARS.map((p) => [p.key, p.label]));
 
 type LabPost = {
   id: string;

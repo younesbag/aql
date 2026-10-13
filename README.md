@@ -27,6 +27,8 @@
 | النشرة | `/newsletter` | مولّد نشرة بريدية: أفكار ← هيكل ← مسودة ← نقد، مع نشر اختياري عبر Loops |
 | الرؤى | `/insights` | لوحة اليوم، سجلّ القرارات، المذكرة الأسبوعية، تقارير الأنماط |
 
+**إعداد شخصي واحد:** ملف `data/profile.json` يحدّد ركائز محتواك وشرائح جمهورك ولهجتك (باسمها ومعجم قياس اختياري) ويوم مراجعتك الأسبوعية، بقيم افتراضية محايدة وتحقّق عربي عند التحميل.
+
 **قناة تيليجرام (الالتقاط الأساسي):** أرسل نصاً أو صوتاً أو رابطاً أو ملف `.txt` فيُلتقط تلقائياً. أوامر البوت (العربية هي الأصل، ولكل أمر مرادف لاتيني لأن قائمة «/» في تيليجرام تقبل الأسماء اللاتينية فقط):
 
 | الأمر | المرادف | الوظيفة |
@@ -80,9 +82,9 @@
 
 الدليل الكامل خطوة بخطوة في [`docs/SETUP.md`](docs/SETUP.md). الاختصار:
 
-1. أنشئ مشروع Supabase وفعّل `vector` ونفّذ `supabase/migrations/0001_init.sql`.
+1. أنشئ مشروع Supabase وفعّل `vector` ونفّذ `supabase/migrations/0001_init.sql` ثم `0002_configurable_pillars.sql`.
 2. أنشئ مستخدمك في Supabase Auth وسجّل UID في `app_owner`.
-3. املأ قوالب `data/*.md` (انظر [`data/README.md`](data/README.md)).
+3. املأ قوالب `data/*.md` وراجع `data/profile.json` (ركائز المحتوى وشرائح الجمهور واللهجة ويوم المراجعة الأسبوعية — انظر [`data/README.md`](data/README.md)).
 4. انسخ `.env.example` إلى `.env.local` واملأه، ثم `npm install && npm run dev`.
 5. انشر على Vercel، واربط بوت تيليجرام، وأضف العامل والتكاملات إن أردت.
 
@@ -122,6 +124,8 @@ An open-source template for a **single-owner** personal intelligence system: a d
 | Content | `/content` | X post lab: idea analysis, draft, critique, and a performance pattern lab |
 | Newsletter | `/newsletter` | Newsletter generator: ideas, outline, draft, critique, optional publishing via Loops |
 | Insights | `/insights` | Day board, decision log, weekly journal, pattern reports |
+
+**One personal config file:** `data/profile.json` sets your content pillars, audience personas, dialect (name plus an optional measured marker list) and weekly review day, with neutral defaults and load-time validation (Arabic error messages).
 
 **Telegram channel (primary capture):** send text, voice, a link or a `.txt` file and it is captured automatically. Bot commands (Arabic is canonical; each has a Latin alias because Telegram's "/" menu only accepts Latin command names):
 
@@ -176,9 +180,9 @@ Live model IDs live in `lib/ai/gemini.ts` and `lib/ai/anthropic.ts`; those files
 
 Full step-by-step guide: [`docs/SETUP.md`](docs/SETUP.md). The short version:
 
-1. Create a Supabase project, enable `vector`, run `supabase/migrations/0001_init.sql`.
+1. Create a Supabase project, enable `vector`, run `supabase/migrations/0001_init.sql` then `0002_configurable_pillars.sql`.
 2. Create your user in Supabase Auth and register its UID in `app_owner`.
-3. Fill in the `data/*.md` templates (see [`data/README.md`](data/README.md)).
+3. Fill in the `data/*.md` templates and review `data/profile.json` (content pillars, audience personas, dialect, weekly review day — see [`data/README.md`](data/README.md)).
 4. Copy `.env.example` to `.env.local`, fill it in, then `npm install && npm run dev`.
 5. Deploy to Vercel, connect a Telegram bot, and add the worker and integrations if you want them.
 

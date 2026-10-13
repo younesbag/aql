@@ -141,13 +141,13 @@ export async function confirmDecisionCapture(itemId: string): Promise<DecisionCo
 }
 
 // ───────────────────────────────────────────────
-// مطالبة النتيجة (من الطقس المسائي — ليلة الخميس، سؤال واحد).
+// مطالبة النتيجة (من الطقس المسائي — ليلة المراجعة الأسبوعية، سؤال واحد).
 // ───────────────────────────────────────────────
 const OUTCOME_STALE_DAYS = 21;
 
 export type StaleDecision = { id: string; decision: string; createdAt: string };
 
-/** أقدم قرار بلا نتيجة وعمره > ٢١ يوماً — مرشّح سؤال الخميس. */
+/** أقدم قرار بلا نتيجة وعمره > ٢١ يوماً — مرشّح سؤال المراجعة الأسبوعية. */
 export async function getStaleDecision(): Promise<StaleDecision | null> {
   const supabase = createAdminClient();
   const cutoff = new Date(Date.now() - OUTCOME_STALE_DAYS * 86_400_000).toISOString();

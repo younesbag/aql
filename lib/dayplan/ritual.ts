@@ -40,6 +40,7 @@ import {
   setDecisionOutcomeText,
 } from "@/lib/capture/decision";
 import { OWNER_TZ } from "@/lib/config/owner";
+import { WEEKLY_REVIEW_DAY } from "@/lib/config/profile";
 
 // ════════════════════════════════════════════════════════════
 // الطقس المسائي (الملف 11 — المرحلة ٢): مراجعة اليوم → استثناء الغد → بناء الخطة.
@@ -64,7 +65,7 @@ function statusMark(status: string): string {
 }
 
 function renderReview(tasks: ReviewTask[]): { text: string; keyboard: InlineKeyboard } {
-  const lines = ["🌙 طقس المساء — وش خلّصت اليوم؟", ""];
+  const lines = ["🌙 طقس المساء — ماذا أنجزت اليوم؟", ""];
   tasks.forEach((t, i) => {
     lines.push(`${i + 1}. ${t.title} — ${statusMark(t.status)}`);
   });
@@ -96,7 +97,7 @@ function exceptionKeyboard(): InlineKeyboard {
 }
 
 async function sendExceptionPrompt(chatId: ChatId): Promise<void> {
-  await sendMessage(chatId, "شي استثنائي بكرة؟ (يعاير خطة الغد)", exceptionKeyboard());
+  await sendMessage(chatId, "هل من أمر استثنائي غداً؟ (يعاير خطة الغد)", exceptionKeyboard());
 }
 
 // ── المواجهة عند الترحيل المتكرّر (المرحلة ٣) ──────────────
@@ -105,7 +106,7 @@ async function sendConfrontation(chatId: ChatId, taskId: string): Promise<void> 
   const title = task?.title ?? "هذه المهمة";
   await sendMessage(
     chatId,
-    `⚠️ «${title}» ترحّلت ٣ مرّات.\nوش القرار؟\n• مو مهمة فعلاً → أسقطها\n• فيها عائق → وش هو؟\n• أكبر من مهمة → أفكّكها أصغر`,
+    `⚠️ «${title}» ترحّلت ٣ مرّات.\nما القرار؟\n• ليست مهمة فعلاً → أسقطها\n• فيها عائق → ما هو؟\n• أكبر من مهمة → أفكّكها أصغر`,
     [
       [{ text: "أسقطها ✗", callback_data: `cf:drop:${taskId}` }],
       [
@@ -133,13 +134,15 @@ async function buildAndSend(
 
 // ── أسئلة ما بعد الخطة (الملف 13 — البندان ٢ و٣) ────────────
 // سؤال معلّق واحد لكل ليلة (لا استجواب): أرقام منشور حديث أولاً (نافذته ١–٣
-// أيام فتضيع)، وإلا نتيجة قرار متقادم — ليلة الخميس فقط (إيقاع أسبوعي).
-function isOwnerThursday(): boolean {
+// أيام فتضيع)، وإلا نتيجة قرار متقادم — في يوم المراجعة الأسبوعية فقط (إيقاع أسبوعي).
+// اليوم من data/profile.json (weeklyReviewDay) ويُقارَن بالاسم المختصر الإنجليزي لأن
+// Intl بلغة en-US يعيده ثابتاً مهما كانت لغة النظام.
+function isWeeklyReviewDay(): boolean {
   return (
     new Intl.DateTimeFormat("en-US", {
       timeZone: OWNER_TZ,
       weekday: "short",
-    }).format(new Date()) === "Thu"
+    }).format(new Date()) === WEEKLY_REVIEW_DAY
   );
 }
 
@@ -158,7 +161,7 @@ async function sendEveningAsks(chatId: ChatId): Promise<void> {
       );
       return;
     }
-    if (isOwnerThursday()) {
+    if (isWeeklyReviewDay()) {
       const dec = await getStaleDecision();
       if (dec) {
         const date = new Intl.DateTimeFormat("ar", {
@@ -168,7 +171,7 @@ async function sendEveningAsks(chatId: ChatId): Promise<void> {
         }).format(new Date(dec.createdAt));
         await sendMessage(
           chatId,
-          `🧭 قرارك من ${date}: «${dec.decision}»\nوش صارت النتيجة؟`,
+          `🧭 قرارك من ${date}: «${dec.decision}»\nما النتيجة؟`,
           [
             [
               { text: "نجح ✓", callback_data: `do:yes:${dec.id}` },
@@ -341,7 +344,7 @@ async function buildDonePicker(): Promise<{ text: string; keyboard: InlineKeyboa
       callback_data: `td:${t.id}`,
     },
   ]);
-  return { text: "✅ وش خلّصت؟ اضغط المهمة:", keyboard };
+  return { text: "✅ ماذا أنجزت؟ اضغط المهمة:", keyboard };
 }
 
 /** الأمر /تم: لوحة اختيار المهمة المنجَزة (خطة اليوم أولاً ثم المفتوحة). */
@@ -455,7 +458,7 @@ export async function handleCallback(cbq: CallbackQuery): Promise<void> {
     if (action === "blocker") {
       await setAwaitingBlocker(id);
       await answerCallbackQuery(cbq.id);
-      await editMessageText(chatId, messageId, "🚧 وش العائق؟ اكتبه بسطر واحد.");
+      await editMessageText(chatId, messageId, "🚧 ما العائق؟ اكتبه بسطر واحد.");
       return;
     }
     if (action === "split") {
@@ -483,7 +486,7 @@ export async function handleCallback(cbq: CallbackQuery): Promise<void> {
     if (action === "free") {
       await answerCallbackQuery(cbq.id);
       await setAwaitingException(ownerDateString(1));
-      await editMessageText(chatId, messageId, "شي استثنائي بكرة؟ ✍️ نص حرّ");
+      await editMessageText(chatId, messageId, "هل من أمر استثنائي غداً؟ ✍️ نص حرّ");
       await sendMessage(chatId, "اكتب استثناء الغد بسطر واحد (مثلاً: نصف يوم سفر بعد الظهر).");
       return;
     }
@@ -492,7 +495,7 @@ export async function handleCallback(cbq: CallbackQuery): Promise<void> {
     await editMessageText(
       chatId,
       messageId,
-      `شي استثنائي بكرة؟ ${exception ?? "لا شيء (عادي)"} ✓`,
+      `هل من أمر استثنائي غداً؟ ${exception ?? "لا شيء (عادي)"} ✓`,
     );
     await buildAndSend(chatId, ownerDateString(1), exception, "evening");
     await sendEveningAsks(chatId);
@@ -526,7 +529,7 @@ export async function handleCallback(cbq: CallbackQuery): Promise<void> {
       await editMessageText(
         chatId,
         messageId,
-        `🧭 ${label} — اكتب النتيجة بسطر واحد (وش صار فعلاً؟) أو أرسل «تخطَّ».`,
+        `🧭 ${label} — اكتب النتيجة بسطر واحد (ماذا حدث فعلاً؟) أو أرسل «تخطَّ».`,
       );
       return;
     }

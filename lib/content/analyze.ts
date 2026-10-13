@@ -3,6 +3,14 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { proJson } from "@/lib/ai/gemini";
 import { OWNER_NAME } from "@/lib/config/owner";
+import {
+  FALLBACK_PILLAR,
+  PERSONAS_WITH_GENERAL,
+  PERSONA_KEYS,
+  PILLARS,
+  PILLAR_KEYS,
+  GENERAL_PERSONA_KEY,
+} from "@/lib/config/profile";
 
 // ════════════════════════════════════════════════════════════
 // مرحلة تحليل النشر — منفصلة تماماً عن التصنيف (classify.ts) والالتقاط.
@@ -11,18 +19,10 @@ import { OWNER_NAME } from "@/lib/config/owner";
 // ════════════════════════════════════════════════════════════
 
 export type ContentType = "thread" | "tweet";
-export type ContentPillar =
-  | "prompt_engineering"
-  | "ai_strategy"
-  | "ai_tools"
-  | "ai_learning";
-export type TargetPersona =
-  | "fahd"
-  | "noura"
-  | "khaled"
-  | "aisha"
-  | "omar"
-  | "general";
+// الركائز والشرائح مفاتيح معرّفة في data/profile.json (لا اتحاد حرفي ثابت) — يتحقق منها
+// المخطط والتفكيك أدناه وقت التشغيل.
+export type ContentPillar = string;
+export type TargetPersona = string;
 export type EngagementDriver = "bookmark" | "repost" | "reply" | "dwell_time";
 export type HookStrength = "strong" | "medium" | "weak";
 
@@ -47,20 +47,19 @@ export type AnalyzeInput = {
   summary?: string | null;
 };
 
-const PILLARS = [
-  "prompt_engineering",
-  "ai_strategy",
-  "ai_tools",
-  "ai_learning",
-] as const;
-const PERSONAS = ["fahd", "noura", "khaled", "aisha", "omar", "general"] as const;
+// أسطر الركائز والشرائح المحقونة في البرومبت (تُبنى مرة من الإعداد).
+const PILLAR_LINES = PILLARS.map((p) => `- ${p.key} — ${p.label}`).join("\n");
+const PERSONA_LINES = PERSONAS_WITH_GENERAL.map(
+  (p) => `- ${p.key} — ${p.label}: ${p.description}`,
+).join("\n");
+
 const DRIVERS = ["bookmark", "repost", "reply", "dwell_time"] as const;
 const STRENGTHS = ["strong", "medium", "weak"] as const;
 const TYPES = ["thread", "tweet"] as const;
 
 // مخطط الإخراج المنظّم — يُفعّل فكّ التشفير المقيَّد في Gemini فيضمن JSON صالحاً بنيوياً
 // ومطابقاً للشكل (يُلغي عطلَي: التغليف بمصفوفة، وعلامة الاقتباس غير المهرَّبة داخل قيمة عربية).
-// مبنيّ من ثوابت الـenum أعلاه ليبقيا متزامنَين.
+// مبنيّ من ثوابت الـenum أعلاه (والركائز/الشرائح من profile.json) ليبقيا متزامنَين.
 const ANALYSIS_SCHEMA: Record<string, unknown> = {
   type: "object",
   properties: {
@@ -69,8 +68,8 @@ const ANALYSIS_SCHEMA: Record<string, unknown> = {
     suggested_hook: { type: "string" },
     key_elements: { type: "array", items: { type: "string" } },
     content_type: { type: "string", enum: [...TYPES] },
-    content_pillar: { type: "string", enum: [...PILLARS] },
-    target_persona: { type: "string", enum: [...PERSONAS] },
+    content_pillar: { type: "string", enum: [...PILLAR_KEYS] },
+    target_persona: { type: "string", enum: [...PERSONA_KEYS] },
     engagement_driver: { type: "string", enum: [...DRIVERS] },
     hook_strength: { type: "string", enum: [...STRENGTHS] },
     has_prompt: { type: "boolean" },
@@ -132,6 +131,12 @@ export async function analyzeForPublishing(
 ${context}
 ---
 
+ركائز المحتوى المعرّفة (المفتاح — التسمية):
+${PILLAR_LINES}
+
+شرائح الجمهور المعرّفة (المفتاح — التسمية: الوصف):
+${PERSONA_LINES}
+
 الفكرة الخام:
 - النص: """${raw}"""
 - الموضوع: ${input.topic ?? "—"}
@@ -144,15 +149,15 @@ ${context}
   "suggested_hook": "اقتراح أولي لهوك قوي بصوت ${OWNER_NAME}",
   "key_elements": ["عنصر إلزامي 1", "عنصر 2"],
   "content_type": "thread أو tweet",
-  "content_pillar": "واحد من: prompt_engineering | ai_strategy | ai_tools | ai_learning",
-  "target_persona": "واحد من: fahd | noura | khaled | aisha | omar | general",
+  "content_pillar": "واحد من: ${PILLAR_KEYS.join(" | ")}",
+  "target_persona": "واحد من: ${PERSONA_KEYS.join(" | ")}",
   "engagement_driver": "واحد من: bookmark | repost | reply | dwell_time",
   "hook_strength": "واحد من: strong | medium | weak",
   "has_prompt": true أو false,
   "notes": "ملاحظات إضافية للكاتب"
 }
 
-إرشادات: content_type = "thread" للمواضيع المعمّقة متعددة العناصر، و"tweet" للفكرة المفردة الحادة. target_persona من الشخصيات الخمس في مرجع السياق (فهد/نورة/خالد/عائشة/عمر) أو general عند عدم الوضوح. has_prompt = true إن كانت الفكرة تتضمّن أو تستلزم برومبتاً جاهزاً للمشاركة.`;
+إرشادات: content_type = "thread" للمواضيع المعمّقة متعددة العناصر، و"tweet" للفكرة المفردة الحادة. content_pillar من الركائز المعرّفة أعلاه. target_persona من شرائح الجمهور المعرّفة أعلاه أو ${GENERAL_PERSONA_KEY} عند عدم الوضوح. has_prompt = true إن كانت الفكرة تتضمّن أو تستلزم برومبتاً جاهزاً للمشاركة.`;
 
   // يعمل على pro (لا flash): التحليل الاستراتيجي يغذّي محرّك التوليد، فجودته تؤثّر مباشرة على الدراف.
   // المخطط المنظّم يضمن JSON صالحاً — علاج جذري لعطل «تعذّر تحليل الفكرة للنشر» المتكرّر.
@@ -179,8 +184,8 @@ ${context}
         ? p.key_elements.map((e) => String(e))
         : [],
       content_type: oneOf(p.content_type, TYPES, "tweet"),
-      content_pillar: oneOf(p.content_pillar, PILLARS, "ai_strategy"),
-      target_persona: oneOf(p.target_persona, PERSONAS, "general"),
+      content_pillar: oneOf(p.content_pillar, PILLAR_KEYS, FALLBACK_PILLAR),
+      target_persona: oneOf(p.target_persona, PERSONA_KEYS, GENERAL_PERSONA_KEY),
       engagement_driver: oneOf(p.engagement_driver, DRIVERS, "bookmark"),
       hook_strength: oneOf(p.hook_strength, STRENGTHS, "medium"),
       has_prompt: typeof p.has_prompt === "boolean" ? p.has_prompt : false,

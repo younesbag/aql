@@ -377,7 +377,7 @@ export async function POST(request: Request) {
     const mq = detectMindQuestion(text);
     if (mq.isQuestion) {
       if (!mq.question) {
-        await sendMessage(chatId, "اكتب سؤالك بعد /اسأل — مثلاً: /اسأل وش قراراتي عن التسعير؟");
+        await sendMessage(chatId, "اكتب سؤالك بعد /اسأل — مثلاً: /اسأل ما قراراتي عن التسعير؟");
         return NextResponse.json({ ok: true });
       }
       await sendMessage(chatId, "🧠 يفكّر…");

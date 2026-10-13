@@ -42,7 +42,7 @@ export function Oracle() {
         <input
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
-          placeholder="وش قلت سابقاً عن…؟"
+          placeholder="ماذا قلت سابقاً عن…؟"
           aria-label="اسأل ذاكرتك"
           className="w-full rounded-lg border border-foreground/15 bg-transparent px-3 py-2 outline-none focus:border-foreground/40"
         />

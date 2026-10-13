@@ -14,6 +14,7 @@ import {
   cancelGeneration,
 } from "./actions";
 import { DEFAULT_OVERRIDES, type GenOverrides } from "@/lib/content/overrides";
+import { PERSONAS_WITH_GENERAL, PILLARS } from "@/lib/config/profile";
 
 type Idea = {
   id: string;
@@ -45,20 +46,11 @@ const TYPE_AR: Record<string, string> = {
   LONG_TWEET: "تغريدة طويلة",
   MEDIUM_TWEET: "تغريدة",
 };
-const PILLAR_AR: Record<string, string> = {
-  prompt_engineering: "هندسة الأوامر",
-  ai_strategy: "استراتيجية الذكاء الاصطناعي",
-  ai_tools: "أدوات الذكاء الاصطناعي",
-  ai_learning: "التعلّم بالذكاء الاصطناعي",
-};
-const PERSONA_AR: Record<string, string> = {
-  fahd: "الشخصية الأولى",
-  noura: "الشخصية الثانية",
-  khaled: "الشخصية الثالثة",
-  aisha: "الشخصية الرابعة",
-  omar: "الشخصية الخامسة",
-  general: "عام",
-};
+// الركائز والشرائح من data/profile.json (مفاتيح → تسميات عربية).
+const PILLAR_AR: Record<string, string> = Object.fromEntries(PILLARS.map((p) => [p.key, p.label]));
+const PERSONA_AR: Record<string, string> = Object.fromEntries(
+  PERSONAS_WITH_GENERAL.map((p) => [p.key, p.label]),
+);
 const DRIVER_AR: Record<string, string> = {
   bookmark: "الحفظ",
   repost: "إعادة النشر",

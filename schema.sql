@@ -1,8 +1,9 @@
 -- ═══════════════════════════════════════════════════════════
--- المخطط المرجعي: نسخة مطابقة حرفياً لهجرة التهيئة
--- `supabase/migrations/0001_init.sql` — للقراءة والمراجعة فقط.
--- مصدر الحقيقة هو ملف الهجرة؛ لا تُطبَّق التغييرات من هنا. أي تعديل جديد =
--- ملف هجرة مرقّم جديد، ثم يُحدَّث هذا الملف ليطابق (يُولَّد بنسخ الهجرة بعد هذا الترويس).
+-- المخطط المرجعي: الحالة التراكمية لهجرات `supabase/migrations/` (حتى 0002) — للقراءة
+-- والمراجعة فقط. بعد هذا الترويس نسخة 0001_init.sql، مع تطبيق ما غيّرته الهجرات اللاحقة
+-- (0002: قيد posts_content_pillar_chk صار فحص صيغة فقط، موسوماً في موضعه أدناه).
+-- مصدر الحقيقة هو ملفات الهجرة؛ لا تُطبَّق التغييرات من هنا. أي تعديل جديد =
+-- ملف هجرة مرقّم جديد، ثم يُحدَّث هذا الملف ليطابق.
 -- ═══════════════════════════════════════════════════════════
 
 -- ═══════════════════════════════════════════════════════════
@@ -157,10 +158,9 @@ CREATE TABLE posts (
     CHECK (status IN ('draft','published')),
   CONSTRAINT posts_format_chk
     CHECK (format IN ('thread','single','email')),
+  -- (0002) الركائز تُعرَّف في data/profile.json؛ القيد يفرض الصيغة فقط
   CONSTRAINT posts_content_pillar_chk
-    CHECK (content_pillar IS NULL OR content_pillar IN (
-      'prompt_engineering','ai_strategy','ai_tools','ai_learning'
-    ))
+    CHECK (content_pillar IS NULL OR content_pillar ~ '^[a-z][a-z0-9_]{1,39}$')
 );
 
 CREATE INDEX idx_posts_status    ON posts (status);

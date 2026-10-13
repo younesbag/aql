@@ -12,6 +12,7 @@ import {
   type GeneratedDraft,
 } from "@/lib/content/generate";
 import { extractAttributes } from "@/lib/content/extract";
+import { isPillarKey } from "@/lib/config/profile";
 import { embed, searchWeb } from "@/lib/ai/gemini";
 import {
   buildDirectives,
@@ -353,8 +354,8 @@ function mapFormat(contentType: string): string {
   return contentType.toUpperCase() === "THREAD" ? "thread" : "single";
 }
 
-// القيم المطابقة لقيد posts_content_pillar_chk — ما عداها يُحفظ null (لا كسر إدراج).
-const PILLAR_VALUES = ["prompt_engineering", "ai_strategy", "ai_tools", "ai_learning"];
+// مفاتيح الركائز من data/profile.json (قيد posts_content_pillar_chk في الهجرة 0002 يفرض الصيغة فقط) —
+// ما عداها يُحفظ null (لا كسر إدراج).
 
 // يحفظ المسودة (بعد التحرير) في posts مع quality_score و hook_text + embedding.
 // itemId قد يكون null (فكرة حرّة لم تُسجَّل) — item_id يقبل null (ON DELETE SET NULL).
@@ -376,7 +377,7 @@ export async function saveDraft(
       hook_text: payload.hook_text || null,
       quality_score: payload.quality_score,
       content_pillar:
-        payload.content_pillar && PILLAR_VALUES.includes(payload.content_pillar)
+        isPillarKey(payload.content_pillar)
           ? payload.content_pillar
           : null,
       status: "draft",

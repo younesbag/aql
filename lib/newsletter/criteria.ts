@@ -1,3 +1,5 @@
+import { PERSONAS } from "../config/profile.ts";
+
 // معايير توليد فكرة النشرة — وحدة مشتركة (lib، غير server-only).
 // يستوردها العميل (نموذج المعايير) والخادم (حقن في البرومبت) — كنمط overrides.
 
@@ -22,14 +24,10 @@ export const DEFAULT_CRITERIA: IdeaCriteria = {
 };
 
 // خيارات الواجهة (dropdowns).
+// شرائح الجمهور تأتي من data/profile.json (ولا تُعرض «عام» هنا: الفراغ يعني أي شريحة).
 export const PERSONA_OPTIONS = [
   { value: "", label: "أي شخصية" },
-  // الأسماء الفعلية للشخصيات الخمس يعرّفها المالك في data/context.md؛ المعرّفات هنا ثابتة.
-  { value: "fahd", label: "الشخصية الأولى" },
-  { value: "noura", label: "الشخصية الثانية" },
-  { value: "khaled", label: "الشخصية الثالثة" },
-  { value: "aisha", label: "الشخصية الرابعة" },
-  { value: "omar", label: "الشخصية الخامسة" },
+  ...PERSONAS.map((p) => ({ value: p.key, label: p.label })),
 ];
 
 export const ANGLE_OPTIONS = [
@@ -57,14 +55,10 @@ export const SOURCE_OPTIONS = [
 ];
 
 // خرائط عربية للحقن في البرومبت (الخادم).
-export const PERSONA_AR: Record<string, string> = {
-  // نص يصل النموذج: يحيله إلى تعريف الشخصية في مرجع السياق (data/context.md).
-  fahd: "الشخصية الأولى (المعرّف fahd في مرجع السياق)",
-  noura: "الشخصية الثانية (المعرّف noura في مرجع السياق)",
-  khaled: "الشخصية الثالثة (المعرّف khaled في مرجع السياق)",
-  aisha: "الشخصية الرابعة (المعرّف aisha في مرجع السياق)",
-  omar: "الشخصية الخامسة (المعرّف omar في مرجع السياق)",
-};
+// نص يصل النموذج: التسمية + المفتاح + وصف الشريحة من data/profile.json.
+export const PERSONA_AR: Record<string, string> = Object.fromEntries(
+  PERSONAS.map((p) => [p.key, `${p.label} (المعرّف ${p.key}): ${p.description}`]),
+);
 // ── الزوايا (وُسّعت 2026-08-12 بأمر المالك) ──────────────────
 // الست الأصلية كانت تُغطّي أشكاله الشائعة وتُهمل أشيعها: تفكيك الفخّ، وإطار
 // التقييم الذاتي، ودراسة الحالة بأرقامه — وهي حاضرة بقوة في أرشيفه وتصنيف

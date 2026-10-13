@@ -37,7 +37,7 @@ cd second-brain
 
 ### 3. تنفيذ الهجرة
 
-افتح **SQL Editor** في Supabase، الصق محتوى `supabase/migrations/0001_init.sql` كاملاً ونفّذه مرة واحدة.
+افتح **SQL Editor** في Supabase، الصق محتوى `supabase/migrations/0001_init.sql` كاملاً ونفّذه مرة واحدة، ثم نفّذ بعده `supabase/migrations/0002_configurable_pillars.sql` (يستبدل قيد ركائز المحتوى بفحص صيغة فقط لأن الركائز تُعرَّف في `data/profile.json`).
 
 **تحقّق** (في SQL Editor):
 
@@ -77,11 +77,11 @@ SELECT user_id FROM app_owner;   -- صف واحد بـ UID الصحيح
 
 ### 5. قوالب السياق `data/*.md`
 
-املأ القوالب الأربعة المعلَّمة «مطلوب» واستبدل كل ما بين `[...]` بمعلوماتك: `context.md` · `voice-and-tone.md` · `life-context.md` · `context-brief.md`. التفاصيل في [`data/README.md`](../data/README.md).
+املأ القوالب الأربعة المعلَّمة «مطلوب» واستبدل كل ما بين `[...]` بمعلوماتك: `context.md` · `voice-and-tone.md` · `life-context.md` · `context-brief.md`. ثم راجع `data/profile.json` — ملف الإعداد الشخصي: ركائز المحتوى (2–8) وشرائح الجمهور (1–7) واللهجة (الاسم ومعجم القياس ونطاقات الكثافة، أو بلا قياس) ويوم المراجعة الأسبوعية. قيمه الافتراضية محايدة وتعمل كما هي، لكن اكتب في `personas` وصف شرائحك الفعلية. التفاصيل ومثال لهجة بقياس رقمي في [`data/README.md`](../data/README.md).
 
 > محتوى هذه الملفات يُرسل إلى مزوّدي النماذج ضمن البرومبتات. لا تضع فيها أسراراً. وإن نشرت نسختك علناً فلا ترفع ملفاتك المعبّأة.
 
-**تحقّق:** ابحث في الملفات الأربعة عن `[` — لا يجب أن يبقى فيها أي قوس قالب لم يُستبدل.
+**تحقّق:** ابحث في الملفات الأربعة عن `[` — لا يجب أن يبقى فيها أي قوس قالب لم يُستبدل. وفي `profile.json` ابحث عن `[املأ` — لا يجب أن يبقى وصف شريحة لم تكتبه. أي خطأ في بنية `profile.json` يوقف `npm run build` برسالة عربية تسمّي الحقل.
 
 ### 6. متغيّرات البيئة
 
@@ -287,7 +287,7 @@ cd second-brain
 
 ### 3. Run the migration
 
-Open the Supabase **SQL Editor**, paste the entire `supabase/migrations/0001_init.sql`, run it once.
+Open the Supabase **SQL Editor**, paste the entire `supabase/migrations/0001_init.sql`, run it once, then run `supabase/migrations/0002_configurable_pillars.sql` (it replaces the content-pillar CHECK with a format-only check, because pillars are defined in `data/profile.json`).
 
 **Verify** (SQL Editor):
 
@@ -325,7 +325,7 @@ SELECT user_id FROM app_owner;   -- exactly one row with your UID
 
 ### 5. Context templates in `data/*.md`
 
-Fill the four templates marked "required" and replace every `[...]` placeholder: `context.md`, `voice-and-tone.md`, `life-context.md`, `context-brief.md`. Details in [`data/README.md`](../data/README.md).
+Fill the four templates marked "required" and replace every `[...]` placeholder: `context.md`, `voice-and-tone.md`, `life-context.md`, `context-brief.md`. Then review `data/profile.json`, your personal config file: content pillars (2–8), audience personas (1–7), dialect (name, marker list and density ranges, or no measurement) and the weekly review day. The shipped defaults are neutral and work as-is, but write your real segments into `personas`. A structural error in `profile.json` fails `npm run build` with an Arabic message naming the field. Details and a Gulf-dialect example in [`data/README.md`](../data/README.md).
 
 > These files are sent to the model providers inside prompts. Never put secrets in them. If you publish your fork, do not commit your filled-in versions.
 
