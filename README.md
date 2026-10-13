@@ -1,4 +1,6 @@
-# العقل الثاني — Second Brain
+# عقل — Aql
+
+![عقل — عقلك الثاني مفتوح المصدر](docs/social-preview.png)
 
 [العربية](#العربية) · [English](#english)
 
