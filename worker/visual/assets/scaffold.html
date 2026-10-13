@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      --canvas-w: 2560px;
+      --canvas-h: 1440px;
+      --paper: #faf7ef;
+      --ink: #172033;
+      --muted: #62625e;
+      --line: #d8d3c7;
+      --blue: #2563eb;
+      --orange: #ec7a3b;
+      --green: #6a9f52;
+      --purple: #8056b3;
+      --yellow: #f7dc65;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: #d9d9d9; }
+    body { font-family: Tahoma, Arial, sans-serif; }
+    [data-canvas] {
+      position: relative;
+      width: var(--canvas-w);
+      height: var(--canvas-h);
+      overflow: hidden;
+      direction: rtl;
+      color: var(--ink);
+      background: var(--paper);
+      isolation: isolate;
+    }
+    [data-copy-id], [data-qa-text] {
+      direction: rtl;
+      unicode-bidi: plaintext;
+      text-align: right;
+    }
+    [data-ltr] {
+      direction: ltr;
+      unicode-bidi: isolate;
+      display: inline-block;
+    }
+    .card {
+      background: rgba(255,255,255,.66);
+      border: 2px solid var(--line);
+      border-radius: 24px;
+    }
+    .marker {
+      background: linear-gradient(transparent 42%, rgba(247,220,101,.72) 42%, rgba(247,220,101,.72) 88%, transparent 88%);
+      padding-inline: .08em;
+    }
+    svg { overflow: visible; }
+  </style>
+</head>
+<body>
+  <main data-canvas aria-label="صورة معرفية عربية">
+    <!-- Build an original layout here. Register every visible string with data-copy-id. -->
+  </main>
+</body>
+</html>

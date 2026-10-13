@@ -1,0 +1,18 @@
+# وحدة systemd لعامل توليد العقل الثاني — انسخها إلى /etc/systemd/system/mind-worker.service
+# عدّل User وWorkingDirectory (والمسار في ExecStart إن لزم) حسب مستخدمك ومسار الاستنساخ على خادمك.
+[Unit]
+Description=second-brain generation worker (Claude session)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=mind
+WorkingDirectory=/opt/mind
+# bash -lc: صدفة دخول كي يجد PATH أوامر node وclaude (تثبيتات nvm وnpm العالمية)
+ExecStart=/bin/bash -lc "node worker/generation-worker.mts"
+Restart=always
+RestartSec=15
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,41 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+
+# next.js / build
+/.next/
+/out/
+/build
+/dist
+*.tsbuildinfo
+next-env.d.ts
+
+# env files (تحمي مفاتيح Supabase و Gemini — لا تُرفع أبداً)
+.env
+.env.local
+.env.*.local
+.env.development.local
+.env.production.local
+worker/.env.worker
+
+# logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# misc / OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# supabase
+.branches
+.temp
+
+.vercel
+
+# ذاكرة الموجّه التكيّفي — محلية لا تُدفع
+.claude/agent-memory-local/
