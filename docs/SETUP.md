@@ -136,6 +136,8 @@ npm run dev
 
 ### 8. النشر على Vercel
 
+**أسرع طريق:** زر النشر بنقرة في [README](../README.md#النشر-بنقرة-على-vercel) — ينسخ المستودع ويطلب المتغيّرات الإلزامية مباشرة. أو يدوياً:
+
 1. استورد المستودع في Vercel (Framework: Next.js، بلا تعديل أوامر البناء).
 2. أضف متغيّرات البيئة من الجدول أعلاه (بيئة Production على الأقل).
 3. انشر. بعد بلوغ النشر حالة **Ready** حدّث **Site URL** و**Redirect URLs** في Supabase بعنوان النشر.
@@ -381,6 +383,8 @@ Open `http://localhost:3000` — you are redirected to `/login`. Enter the email
 - `npm run build` succeeds (even with no environment variables).
 
 ### 8. Deploy to Vercel
+
+**Fastest path:** the one-click button in the [README](../README.md#one-click-deploy-to-vercel) clones the repo and asks for the required variables. Or manually:
 
 1. Import the repository in Vercel (Framework: Next.js, default build settings).
 2. Add the environment variables from the table above (Production at minimum).

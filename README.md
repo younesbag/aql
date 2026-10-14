@@ -2,6 +2,8 @@
 
 ![عقل — عقلك الثاني مفتوح المصدر](docs/social-preview.png)
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fyounesbag%2Faql&project-name=aql&repository-name=aql&env=OWNER_NAME%2CNEXT_PUBLIC_SUPABASE_URL%2CNEXT_PUBLIC_SUPABASE_ANON_KEY%2CSUPABASE_SERVICE_ROLE_KEY%2CGEMINI_API_KEY%2CCRON_SECRET&envDescription=Your%20name%20%28OWNER_NAME%29%2C%20Supabase%20URL%20%2B%20anon%20%28or%20publishable%29%20key%20%2B%20service_role%20%28or%20secret%29%20key%20%28Project%20Settings%20%3E%20API%29%2C%20a%20Gemini%20API%20key%2C%20and%20any%20long%20random%20string%20for%20CRON_SECRET.%20Telegram%2C%20Claude%2C%20Loops%20and%20Typefully%20can%20be%20added%20later.&envLink=https%3A%2F%2Fgithub.com%2Fyounesbag%2Faql%2Fblob%2Fmain%2Fdocs%2FSETUP.md%236-environment-variables)
+
 [العربية](#العربية) · [English](#english)
 
 ---
@@ -80,7 +82,17 @@
 - **البناء بلا مفاتيح:** عملاء SDK كسولون، فينجح `npm run build` بلا أي متغيّر بيئة.
 - **مستخدم واحد، RLS صارم:** لا مالك مسجَّل في `app_owner` يعني لا وصول لأحد.
 
-### بداية سريعة
+### النشر بنقرة على Vercel
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fyounesbag%2Faql&project-name=aql&repository-name=aql&env=OWNER_NAME%2CNEXT_PUBLIC_SUPABASE_URL%2CNEXT_PUBLIC_SUPABASE_ANON_KEY%2CSUPABASE_SERVICE_ROLE_KEY%2CGEMINI_API_KEY%2CCRON_SECRET&envDescription=Your%20name%20%28OWNER_NAME%29%2C%20Supabase%20URL%20%2B%20anon%20%28or%20publishable%29%20key%20%2B%20service_role%20%28or%20secret%29%20key%20%28Project%20Settings%20%3E%20API%29%2C%20a%20Gemini%20API%20key%2C%20and%20any%20long%20random%20string%20for%20CRON_SECRET.%20Telegram%2C%20Claude%2C%20Loops%20and%20Typefully%20can%20be%20added%20later.&envLink=https%3A%2F%2Fgithub.com%2Fyounesbag%2Faql%2Fblob%2Fmain%2Fdocs%2FSETUP.md%236-environment-variables)
+
+1. **قبل الزر:** أنشئ مشروع Supabase مجانياً ونفّذ في محرر SQL الملفين `supabase/migrations/0001_init.sql` ثم `0002_configurable_pillars.sql` ([الخطوات 2–3](docs/SETUP.md)).
+2. **اضغط الزر:** ينسخ Vercel المستودع إلى حسابك ويطلب ستة متغيّرات: اسمك، ورابط Supabase ومفتاحيه: anon أو publishable، وservice_role أو secret (من Project Settings ← API)، ومفتاح Gemini، وأي نصّ عشوائي طويل لـ`CRON_SECRET`.
+3. **بعد النشر:** أنشئ مستخدمك في Supabase Auth وسجّل UID في `app_owner` ([الخطوة 4](docs/SETUP.md))، وأضف عنوان النشر في Site URL وRedirect URLs. ثم ادخل من `/login`.
+
+تيليجرام والعامل وClaude وLoops وTypefully اختيارية وتُضاف لاحقاً من إعدادات المشروع في Vercel.
+
+### بداية سريعة (تشغيل محلي)
 
 الدليل الكامل خطوة بخطوة في [`docs/SETUP.md`](docs/SETUP.md). الاختصار:
 
@@ -178,7 +190,17 @@ Live model IDs live in `lib/ai/gemini.ts` and `lib/ai/anthropic.ts`; those files
 - **Build without keys:** SDK clients are lazy, so `npm run build` succeeds with no environment variables.
 - **One user, strict RLS:** no owner in `app_owner` means no access for anyone.
 
-### Quick start
+### One-click deploy to Vercel
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fyounesbag%2Faql&project-name=aql&repository-name=aql&env=OWNER_NAME%2CNEXT_PUBLIC_SUPABASE_URL%2CNEXT_PUBLIC_SUPABASE_ANON_KEY%2CSUPABASE_SERVICE_ROLE_KEY%2CGEMINI_API_KEY%2CCRON_SECRET&envDescription=Your%20name%20%28OWNER_NAME%29%2C%20Supabase%20URL%20%2B%20anon%20%28or%20publishable%29%20key%20%2B%20service_role%20%28or%20secret%29%20key%20%28Project%20Settings%20%3E%20API%29%2C%20a%20Gemini%20API%20key%2C%20and%20any%20long%20random%20string%20for%20CRON_SECRET.%20Telegram%2C%20Claude%2C%20Loops%20and%20Typefully%20can%20be%20added%20later.&envLink=https%3A%2F%2Fgithub.com%2Fyounesbag%2Faql%2Fblob%2Fmain%2Fdocs%2FSETUP.md%236-environment-variables)
+
+1. **Before the button:** create a free Supabase project and run `supabase/migrations/0001_init.sql` then `0002_configurable_pillars.sql` in its SQL editor ([steps 2–3](docs/SETUP.md#english)).
+2. **Click the button:** Vercel clones the repo into your account and asks for six variables: your name, the Supabase URL plus its anon (or publishable) and service_role (or secret) keys (Project Settings → API), a Gemini key, and any long random string for `CRON_SECRET`.
+3. **After deploy:** create your user in Supabase Auth, register its UID in `app_owner` ([step 4](docs/SETUP.md#english)), and add the deployment URL to Site URL / Redirect URLs. Then sign in at `/login`.
+
+Telegram, the worker, Claude, Loops and Typefully are optional and can be added later in the Vercel project settings.
+
+### Quick start (local)
 
 Full step-by-step guide: [`docs/SETUP.md`](docs/SETUP.md). The short version:
 
